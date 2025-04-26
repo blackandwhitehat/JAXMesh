@@ -1,6 +1,6 @@
 # JaxMesh: Visualizing Our Meshtastic Community
 
-I built this interactive visualization to showcase how the Meshtastic network works and to help newcomers understand what mesh networking is all about. Instead of boring diagrams, I wanted to create something that actually *shows* how data moves between nodes in real-time.
+I built this interactive visualization to showcase how the Meshtastic network works. Instead of boring diagrams, I wanted to create something that actually *shows* how data moves between nodes in real-time.
 
 ## What's Cool About This
 
