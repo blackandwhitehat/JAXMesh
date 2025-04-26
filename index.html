@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📶</text></svg>"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JaxMesh - Jacksonville Meshtastic Community</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --dark-bg: #0a0a0a;
+            --light-bg: #f5f7fa;
+            --dark-text: #e6edf3;
+            --light-text: #1f2328;
+            --accent-color: #1a7cff;
+            --primary-font: 'Orbitron', sans-serif;
+            --body-font: 'Inter', sans-serif;
+            --panel-dark: rgba(22, 27, 34, 0.85);
+            --panel-light: rgba(255, 255, 255, 0.85);
+            --grid-dark: rgba(48, 54, 61, 0.5);
+            --grid-light: rgba(220, 225, 230, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            font-family: var(--body-font);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background-color: #e0e5ec; /* Gray background for light mode */
+            color: var(--light-text);
+        }
+
+        /* Header styles */
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 100;
+        }
+
+        .logo {
+            height: 100px;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .logo img {
+            height: 100%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            align-self: flex-start;
+            padding-top: 10px; 
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--dark-text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        body.light-mode .theme-toggle {
+            color: var(--light-text);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        /* Network container */
+        #network-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(10, 30, 50, 0.1);
+        }
+
+        body.light-mode .grid-background {
+            background-color: rgba(100, 170, 230, 0.05);
+        }
+        
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0, 100, 255, 0.05) 50%, transparent 60%, transparent 100%);
+            animation: wave-animation 20s infinite linear;
+            pointer-events: none;
+        }
+        
+        .wave2 {
+            opacity: 0.3;
+            animation-delay: -5s;
+            animation-duration: 17s;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0, 150, 255, 0.03) 50%, transparent 60%, transparent 100%);
+        }
+        
+        .wave3 {
+            opacity: 0.2;
+            animation-delay: -2s;
+            animation-duration: 25s;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(100, 200, 255, 0.04) 50%, transparent 60%, transparent 100%);
+        }
+        
+        @keyframes wave-animation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Radio nodes */
+        .radio-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            pointer-events: auto;
+            z-index: 5;
+        }
+
+        /* Use a simple flat diamond with a border for each node */
+        .radio-node .diamond {
+            width: 100%;
+            height: 100%;
+            background-color: currentColor;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radio-node .diamond::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 15px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            z-index: 2;
+        }
+
+        .radio-node .signal-wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .radio-node .wave1 {
+            width: 20px;
+            height: 20px;
+            animation: signal-pulse 3s infinite;
+        }
+
+        .radio-node .wave2 {
+            width: 35px;
+            height: 35px;
+            animation: signal-pulse 3s infinite 0.5s;
+        }
+
+        .radio-node .wave3 {
+            width: 50px;
+            height: 50px;
+            animation: signal-pulse 3s infinite 1s;
+        }
+
+        @keyframes signal-pulse {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) rotate(-45deg) scale(0.1);
+                border-color: rgba(255, 255, 255, 0.8);
+            }
+            20% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) rotate(-45deg) scale(1);
+                border-color: rgba(255, 255, 255, 0);
+            }
+        }
+
+        /* Hub node specific styles */
+        .radio-node.hub {
+            width: 80px;
+            height: 80px;
+            z-index: 10;
+        }
+
+        .radio-node.hub .wave1 {
+            width: 30px;
+            height: 30px;
+        }
+
+        .radio-node.hub .wave2 {
+            width: 50px;
+            height: 50px;
+        }
+
+        .radio-node.hub .wave3 {
+            width: 70px;
+            height: 70px;
+        }
+
+        /* Node hover and active states */
+        .radio-node:hover {
+            transform: rotate(45deg) scale(1.1);
+            z-index: 20;
+        }
+
+        .radio-node:active {
+            transform: rotate(45deg) scale(0.95);
+        }
+
+        .radio-node .label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-45deg);
+            font-family: var(--primary-font);
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 3px 8px;
+            border-radius: 4px;
+            opacity: 1; 
+            transition: transform 0.3s ease;
+        }
+
+        body.light-mode .radio-node .label {
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .radio-node:hover .label {
+            transform: translateX(-50%) rotate(-45deg) translateY(-5px);
+        }
+
+        /* Status indicator */
+        .radio-node .status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4ade80; 
+            z-index: 5;
+            box-shadow: 0 0 5px rgba(74, 222, 128, 0.8);
+            transform: rotate(-45deg);
+        }
+
+        /* Connections */
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+            transform-origin: 0 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Data packet */
+        .data-packet {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* Panel styles */
+        .panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            background-color: var(--panel-dark);
+            border-radius: 10px;
+            padding: 2rem;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            overflow-y: auto;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        body.light-mode .panel {
+            background-color: var(--panel-light);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .panel-header {
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-title {
+            font-family: var(--primary-font);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .panel-close {
+            background: none;
+            border: none;
+            color: var(--dark-text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        body.light-mode .panel-close {
+            color: var(--light-text);
+        }
+
+        .panel-close:hover {
+            opacity: 1;
+        }
+
+        .panel-content h3 {
+            font-family: var(--primary-font);
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent-color);
+        }
+
+        .panel-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .panel-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-logo {
+            height: 215px;
+            margin-bottom: 2rem;
+        }
+
+        .loading-logo img {
+            height: 100%;
+        }
+
+        .loading-bar-container {
+            width: 300px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+            transition: width 0.5s ease;
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: var(--body-font);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .logo {
+                height: 40px;
+            }
+
+            .panel {
+                width: 90%;
+                padding: 1.5rem;
+            }
+
+            .panel-title {
+                font-size: 1.5rem;
+            }
+
+            .radio-node {
+                width: 50px;
+                height: 50px;
+            }
+
+            .radio-node.hub {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-logo">
+            <img src="jaxmeshlogo.png" alt="JaxMesh Logo">
+        </div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        <div class="loading-text" id="loading-text">Loading network...</div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo" id="home-button">
+            <img src="jaxmeshlogo.png" alt="JaxMesh Logo">
+        </div>
+        <div class="controls">
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+        </div>
+    </header>
+
+    <!-- Network visualization container -->
+    <div id="network-container">
+        <div class="grid-background">
+            <div class="wave"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+        </div>
+        <!-- Radio nodes and connections will be added here dynamically -->
+    </div>
+
+    <!-- Content Panels - One for each section -->
+    <div class="panel" id="home-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">JaxMesh Hub</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <h2>🎯 Mission</h2>
+            <p>JaxMesh is a community of encrypted communications enthusiasts building a sustainable, decentralized node network across Jacksonville, FL.</p>
+          
+            <h2>🤝 Community</h2>
+            <p><strong>Chat/Contact:</strong> Join us on <a href="https://discord.gg/86uf2wTMwq">Discord</a> to connect and stay updated</p>
+            <p><strong>#MeshMonday:</strong> Meetups on the first Monday of every month at 7PM<br>
+            ☕ <b>Southern Grounds & Co</b><br>
+            📍 3562 St Johns Ave, Jacksonville, FL 32205<br>
+            🧢 Look for the 🐼 hat!<br>
+            ⚡ All updates (news, changes, cancellations) are shared through Discord. Join today, don't miss out!</p>
+          
+            <h2>🌐 About the Site</h2>
+            <p>Each diamond represents a Meshtastic node<br>
+            Each link represents a connection</p>
+            <p>📚 Instead of duplicating content, we dynamically populate our site from the Open-Source <a href="https://github.com/ShakataGaNai/awesome-meshtastic/" target="_blank">Awesome Meshtastic List</a><br>
+            💬 Want your content featured? Submit a PR to their GitHub project!</p>
+            <p>🛠️ JAXMesh.com is proudly operated by <a href="https://commsforall.com" target="_blank">CommsForAll.com</a></p>
+          
+        </div>
+    </div>
+
+    <div class="panel" id="official-resources">
+        <div class="panel-header">
+            <h2 class="panel-title">Official Resources</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="panel" id="guides-getting-started">
+        <div class="panel-header">
+            <h2 class="panel-title">Guides & Getting Started</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="panel" id="maps-diagnostics">
+        <div class="panel-header">
+            <h2 class="panel-title">Maps and Diagnostics</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="panel" id="server-software">
+        <div class="panel-header">
+            <h2 class="panel-title">Server Software</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="panel" id="local-software">
+        <div class="panel-header">
+            <h2 class="panel-title">Local Software</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="panel" id="hacks-projects">
+        <div class="panel-header">
+            <h2 class="panel-title">Hacks and Projects</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="panel" id="hardware-stores">
+        <div class="panel-header">
+            <h2 class="panel-title">Hardware Stores</h2>
+            <button class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Simulating loading progress
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingText = document.getElementById('loading-text');
+        const loadingScreen = document.getElementById('loading-screen');
+        
+        let loadProgress = 0;
+        const loadingInterval = setInterval(() => {
+            loadProgress += Math.random() * 10;
+            if (loadProgress >= 100) {
+                loadProgress = 100;
+                clearInterval(loadingInterval);
+                loadingText.textContent = 'Initializing network...';
+                
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 1000);
+                }, 500);
+            }
+            loadingBar.style.width = loadProgress + '%';
+        }, 200);
+        
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        let darkTheme = true;
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            darkTheme = !darkTheme;
+            themeToggle.innerHTML = darkTheme ? '🌙' : '☀️';
+        });
+        
+        // Home button
+        document.getElementById('home-button').addEventListener('click', () => {
+            openPanel('home-panel');
+        });
+        
+        // Panel controls
+        function openPanel(panelId) {
+            // Close all panels first
+            const allPanels = document.querySelectorAll('.panel');
+            allPanels.forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Open the selected panel
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.classList.add('active');
+            }
+        }
+        
+        // Close buttons for panels
+        document.querySelectorAll('.panel-close').forEach(button => {
+            button.addEventListener('click', () => {
+                const panel = button.closest('.panel');
+                panel.classList.remove('active');
+            });
+        });
+        
+        // Node and connection configuration
+        const sectionColors = [
+            '#ff0000', // Red - About
+            '#ff7f00', // Orange - Guides
+            '#ffff00', // Yellow - News
+            '#00ff00', // Green - Map
+            '#0000ff', // Blue - MeshView
+            '#4b0082', // Indigo - Resources
+            '#8b00ff'  // Violet - Contact
+        ];
+
+        
+        // Function to create a radio node
+        function createRadioNode(id, x, y, color, name, panelId, isHub = false) {
+            const container = document.getElementById('network-container');
+            
+            // Create node container
+            const node = document.createElement('div');
+            node.className = isHub ? 'radio-node hub' : 'radio-node';
+            node.style.left = `${x}px`;
+            node.style.top = `${y}px`;
+            node.id = `node-${id}`;
+            
+            // Create diamond
+            const diamond = document.createElement('div');
+            diamond.className = 'diamond';
+            
+            if (!isHub) {
+                diamond.style.backgroundColor = color;
+                diamond.style.boxShadow = `0 0 15px ${color}40, inset 0 0 15px ${color}40`;
+            } else {
+                diamond.style.backgroundColor = '#ffffff';
+                diamond.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.3)';
+            }
+            
+            // Add signal waves to represent wireless
+            for (let i = 1; i <= 3; i++) {
+                const wave = document.createElement('div');
+                wave.className = `signal-wave wave${i}`;
+                diamond.appendChild(wave);
+            }
+            
+            node.appendChild(diamond);
+            
+            // Add label
+            const label = document.createElement('div');
+            label.className = 'label';
+            label.textContent = name;
+            node.appendChild(label);
+            
+            // Add status indicator with random status for some nodes
+            const status = document.createElement('div');
+            status.className = 'status';
+            
+            // Randomize some statuses
+            if (!isHub && Math.random() < 0.15) {
+                status.style.backgroundColor = '#facc15';
+                status.style.boxShadow = '0 0 5px rgba(250, 204, 21, 0.8)';
+            }
+            
+            node.appendChild(status);
+            
+            // Add to container
+            container.appendChild(node);
+            
+            // Add click event
+            node.addEventListener('click', () => {
+                // Highlight the clicked node
+                node.style.transform = 'rotate(45deg) scale(1.2)';
+                setTimeout(() => {
+                    node.style.transform = 'rotate(45deg)';
+                }, 300);
+                
+                openPanel(panelId);
+            });
+            
+            return node;
+        }
+        
+        // Function to create connection between nodes
+        function createConnection(node1, node2, color) {
+            const container = document.getElementById('network-container');
+            
+            // Get positions
+            const rect1 = node1.getBoundingClientRect();
+            const rect2 = node2.getBoundingClientRect();
+            
+            const x1 = rect1.left + rect1.width / 2;
+            const y1 = rect1.top + rect1.height / 2;
+            const x2 = rect2.left + rect2.width / 2;
+            const y2 = rect2.top + rect2.height / 2;
+            
+            // Calculate distance and angle
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            // Create connection element
+            const connection = document.createElement('div');
+            connection.className = 'connection';
+            connection.style.width = `${distance}px`;
+            connection.style.left = `${x1}px`;
+            connection.style.top = `${y1}px`;
+            connection.style.transform = `rotate(${angle}deg)`;
+            
+            if (color) {
+                connection.style.background = `linear-gradient(90deg, ${color}33, ${color}, ${color}33)`;
+            }
+            
+            container.appendChild(connection);
+            
+            return connection;
+        }
+        
+        // Function to create a data packet
+        function createDataPacket(startNode, endNode, color) {
+            // Validate that both nodes exist
+            if (!startNode || !endNode) {
+                console.error("Invalid nodes provided to createDataPacket");
+                return null;
+            }
+            
+            const container = document.getElementById('network-container');
+            
+            // Get positions - ensure they're valid
+            const rect1 = startNode.getBoundingClientRect();
+            const rect2 = endNode.getBoundingClientRect();
+            
+            // Validate that nodes have valid dimensions
+            if (rect1.width <= 0 || rect2.width <= 0) {
+                console.error("Node has invalid dimensions");
+                return null;
+            }
+            
+            const startX = rect1.left + rect1.width / 2;
+            const startY = rect1.top + rect1.height / 2;
+            const endX = rect2.left + rect2.width / 2;
+            const endY = rect2.top + rect2.height / 2;
+            
+            // Create the packet element
+            const packet = document.createElement('div');
+            packet.className = 'data-packet';
+            
+            if (color) {
+                packet.style.backgroundColor = color;
+                packet.style.boxShadow = `0 0 10px ${color}`;
+            }
+            
+            // Set initial position
+            packet.style.left = `${startX}px`;
+            packet.style.top = `${startY}px`;
+            
+            // Add to container
+            container.appendChild(packet);
+            
+            // Animation properties
+            const animData = {
+                startX: startX,
+                startY: startY,
+                endX: endX,
+                endY: endY,
+                progress: 0,
+                speed: 0.01 + Math.random() * 0.01,
+                packet: packet,
+                startNode: startNode,
+                endNode: endNode,
+                color: color
+            };
+            
+            return animData;
+        }
+
+        // Initialize the network after the page loads
+        window.addEventListener('load', () => {
+            // Initialize network nodes and connections after a slight delay
+            setTimeout(initializeNetwork, 1000);
+        });
+        
+        function initializeNetwork() {
+            const networkContainer = document.getElementById('network-container');
+            const containerRect = networkContainer.getBoundingClientRect();
+            
+            // Center position - truly centered
+            const centerX = containerRect.width / 2 - 40; // Half hub node width
+            const centerY = containerRect.height / 2 - 40; // Half hub node height
+            
+            // Create the hub node at the center
+            const hubNode = createRadioNode('hub', centerX, centerY, '#ffffff', 'JaxMesh Hub', 'home-panel', true);
+            
+            // Define our Meshtastic section names
+            const meshtasticSections = [
+                { name: 'Official Resources', color: sectionColors[0], panelId: 'official-resources' },
+                { name: 'Guides & Getting Started', color: sectionColors[1], panelId: 'guides-getting-started' },
+                { name: 'Maps and Diagnostics', color: sectionColors[2], panelId: 'maps-diagnostics' },
+                { name: 'Server Software', color: sectionColors[3], panelId: 'server-software' },
+                { name: 'Local Software', color: sectionColors[4], panelId: 'local-software' },
+                { name: 'Hacks and Projects', color: sectionColors[5], panelId: 'hacks-projects' },
+                { name: 'Hardware Stores', color: sectionColors[6], panelId: 'hardware-stores' }
+            ];
+            
+            // Create section nodes around the hub in a circle
+            const nodes = [];
+            const radius = Math.min(containerRect.width, containerRect.height) * 0.3;
+            const numNodes = sectionColors.length;
+            
+            for (let i = 0; i < numNodes; i++) {
+                // Calculate position in a circle
+                const angle = (i / numNodes) * Math.PI * 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                // Create node with Meshtastic section name and panel ID
+                const node = createRadioNode(
+                    i, 
+                    x, 
+                    y, 
+                    meshtasticSections[i].color, 
+                    meshtasticSections[i].name, 
+                    meshtasticSections[i].panelId
+                );
+                nodes.push(node);
+                
+                // Connect to hub
+                createConnection(hubNode, node, meshtasticSections[i].color);
+                
+                // Update panel titles to match node labels
+                const panel = document.getElementById(meshtasticSections[i].panelId);
+                if (panel) {
+                    const titleElement = panel.querySelector('.panel-title');
+                    if (titleElement) {
+                        titleElement.textContent = meshtasticSections[i].name;
+                    }
+                }
+            }
+            
+            // Connect all nodes to each other (fully connected mesh)
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    // Blend colors for connection
+                    const blendedColor = blendColors(sectionColors[i], sectionColors[j]);
+                    createConnection(nodes[i], nodes[j], blendedColor);
+                }
+            }
+            
+            // Create data packets
+            const packets = [];
+            
+            // Initial packets from hub to nodes
+            for (let i = 0; i < nodes.length; i++) {
+                if (Math.random() < 0.5) { // 50% chance for each node
+                    packets.push(createDataPacket(hubNode, nodes[i], sectionColors[i]));
+                }
+            }
+            
+            // Packets between nodes
+            for (let i = 0; i < 5; i++) { // Create 5 random node-to-node packets
+                const fromIndex = Math.floor(Math.random() * nodes.length);
+                const toIndex = Math.floor(Math.random() * nodes.length);
+                
+                if (fromIndex !== toIndex) {
+                    const blendedColor = blendColors(sectionColors[fromIndex], sectionColors[toIndex]);
+                    packets.push(createDataPacket(nodes[fromIndex], nodes[toIndex], blendedColor));
+                }
+            }
+            
+            // Animation loop for packets
+            function animatePackets() {
+                // First, check if we need to add more packets (if count is low)
+                if (packets.length < 10) {  // Maintain a minimum of 10 active packets
+                    // Add new packets - 50% chance hub-to-node, 50% chance node-to-node
+                    if (Math.random() < 0.5) {
+                        // Hub to node packet
+                        const toIndex = Math.floor(Math.random() * nodes.length);
+                        packets.push(createDataPacket(hubNode, nodes[toIndex], meshtasticSections[toIndex].color));
+                    } else {
+                        // Node to node packet
+                        const fromIndex = Math.floor(Math.random() * nodes.length);
+                        const toIndex = Math.floor(Math.random() * nodes.length);
+                        
+                        if (fromIndex !== toIndex) {
+                            const blendedColor = blendColors(meshtasticSections[fromIndex].color, meshtasticSections[toIndex].color);
+                            packets.push(createDataPacket(nodes[fromIndex], nodes[toIndex], blendedColor));
+                        }
+                    }
+                }
+
+                // Animate existing packets
+                for (let i = packets.length - 1; i >= 0; i--) {
+                    const packet = packets[i];
+                    packet.progress += packet.speed;
+                    
+                    if (packet.progress >= 1) {
+                        // Remove the packet when it reaches its destination
+                        packet.packet.remove();
+                        packets.splice(i, 1);
+                    } else {
+                        // Update packet position with slight arc
+                        const x = packet.startX + (packet.endX - packet.startX) * packet.progress;
+                        const y = packet.startY + (packet.endY - packet.startY) * packet.progress;
+                        
+                        // Add arc effect to y position
+                        const arc = Math.sin(packet.progress * Math.PI) * 20;
+                        
+                        packet.packet.style.left = `${x}px`;
+                        packet.packet.style.top = `${y - arc}px`;
+                    }
+                }
+                
+                requestAnimationFrame(animatePackets);
+            }
+            
+            // Start animation
+            animatePackets();
+            
+            // Automatic pulse animation for nodes
+            setInterval(() => {
+                // Pulse the hub node
+                hubNode.style.transform = 'rotate(45deg) scale(1.1)';
+                setTimeout(() => {
+                    hubNode.style.transform = 'rotate(45deg)';
+                }, 300);
+                
+                // Pulse a random section node
+                const randomIndex = Math.floor(Math.random() * nodes.length);
+                nodes[randomIndex].style.transform = 'rotate(45deg) scale(1.1)';
+                setTimeout(() => {
+                    nodes[randomIndex].style.transform = 'rotate(45deg)';
+                }, 300);
+            }, 2000);
+            
+            // Open home panel after initialization
+            setTimeout(() => {
+                openPanel('home-panel');
+            }, 500);
+        }
+        
+        // Helper function to blend two colors
+        function blendColors(color1, color2) {
+            // Convert hex to rgb
+            const c1 = hexToRgb(color1);
+            const c2 = hexToRgb(color2);
+            
+            // Blend colors
+            const r = Math.floor((c1.r + c2.r) / 2);
+            const g = Math.floor((c1.g + c2.g) / 2);
+            const b = Math.floor((c1.b + c2.b) / 2);
+            
+            // Convert back to hex
+            return rgbToHex(r, g, b);
+        }
+        
+        // Helper function to convert hex to rgb
+        function hexToRgb(hex) {
+            // Remove # if present
+            hex = hex.replace('#', '');
+            
+            // Convert 3-digit hex to 6-digits
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            
+            // Parse hex values
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            return { r, g, b };
+        }
+        
+        // Helper function to convert rgb to hex
+        function rgbToHex(r, g, b) {
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Remove existing nodes and connections
+            const container = document.getElementById('network-container');
+            container.innerHTML = '<div class="grid-background"></div>';
+            
+            // Reinitialize the network
+            initializeNetwork();
+        });
+    </script>
+    <script src="jaxmeshsections.js"></script>
+</body>
+</html>
