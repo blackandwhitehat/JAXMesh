@@ -927,15 +927,19 @@
             if (simpleMode) {
                 simpleView.style.display = 'block';
                 networkContainer.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                document.body.style.height = 'auto';
                 viewToggle.textContent = '🎨';
                 viewToggle.setAttribute('aria-label', 'Switch to animated view');
-                // Close any open panels
+                // Close any open panels so they don't block simple view
                 document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
                 // Load content into simple view
                 loadSimpleView('home-panel');
             } else {
                 simpleView.style.display = 'none';
                 networkContainer.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                document.body.style.height = '100vh';
                 viewToggle.textContent = '📖';
                 viewToggle.setAttribute('aria-label', 'Switch to simple view');
             }
@@ -1051,12 +1055,13 @@
             }
         });
 
-        // Click outside panel (on backdrop) closes it
+        // Click outside panel (on backdrop) closes it — only in network view
         document.addEventListener('click', (e) => {
+            if (simpleMode) return; // Don't interfere with simple view
             const activePanels = document.querySelectorAll('.panel.active');
             activePanels.forEach(panel => {
-                // Close if click is outside the panel and not on a node
-                if (!panel.contains(e.target) && !e.target.closest('.radio-node') && !e.target.closest('.logo')) {
+                // Close if click is outside the panel and not on a node or controls
+                if (!panel.contains(e.target) && !e.target.closest('.radio-node') && !e.target.closest('.logo') && !e.target.closest('.controls')) {
                     panel.classList.remove('active');
                 }
             });
@@ -1404,9 +1409,9 @@
                 }, 300);
             }, 2000);
             
-            // Open home panel after initialization
+            // Open home panel after initialization (only in network view)
             setTimeout(() => {
-                openPanel('home-panel');
+                if (!simpleMode) openPanel('home-panel');
             }, 500);
         }
         
@@ -1448,13 +1453,11 @@
             return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
         }
         
-        // Handle window resize
+        // Handle window resize (only rebuild network in animated view)
         window.addEventListener('resize', () => {
-            // Remove existing nodes and connections
+            if (simpleMode) return;
             const container = document.getElementById('network-container');
-            container.innerHTML = '<div class="grid-background"></div>';
-            
-            // Reinitialize the network
+            container.innerHTML = '<div class="grid-background"><div class="wave"></div><div class="wave wave2"></div><div class="wave wave3"></div></div>';
             initializeNetwork();
         });
     </script>
