@@ -251,10 +251,21 @@
             height: 70px;
         }
 
-        /* Node hover and active states */
-        .radio-node:hover {
+        /* Node hover, focus, and active states */
+        .radio-node:hover,
+        .radio-node:focus-visible {
             transform: rotate(45deg) scale(1.1);
             z-index: 20;
+        }
+
+        .radio-node:focus-visible {
+            outline: 2px solid #5cacff;
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        .radio-node:focus:not(:focus-visible) {
+            outline: none;
         }
 
         .radio-node:active {
@@ -793,7 +804,7 @@
     <div class="panel" id="home-panel">
         <div class="panel-header">
             <h2 class="panel-title">JaxMesh Hub</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <h2>🎯 Mission</h2>
@@ -820,7 +831,7 @@
     <div class="panel" id="official-resources">
         <div class="panel-header">
             <h2 class="panel-title">Official Resources</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <!-- Content will be populated by JavaScript -->
@@ -830,7 +841,7 @@
     <div class="panel" id="guides-getting-started">
         <div class="panel-header">
             <h2 class="panel-title">Guides & Getting Started</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <!-- Content will be populated by JavaScript -->
@@ -840,7 +851,7 @@
     <div class="panel" id="maps-diagnostics">
         <div class="panel-header">
             <h2 class="panel-title">Maps and Diagnostics</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <!-- Content will be populated by JavaScript -->
@@ -850,7 +861,7 @@
     <div class="panel" id="server-software">
         <div class="panel-header">
             <h2 class="panel-title">Server Software</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <!-- Content will be populated by JavaScript -->
@@ -860,7 +871,7 @@
     <div class="panel" id="local-software">
         <div class="panel-header">
             <h2 class="panel-title">Local Software</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <!-- Content will be populated by JavaScript -->
@@ -870,7 +881,7 @@
     <div class="panel" id="hacks-projects">
         <div class="panel-header">
             <h2 class="panel-title">Hacks and Projects</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <!-- Content will be populated by JavaScript -->
@@ -880,7 +891,7 @@
     <div class="panel" id="hardware-stores">
         <div class="panel-header">
             <h2 class="panel-title">Hardware Stores</h2>
-            <button class="panel-close">×</button>
+            <button class="panel-close" aria-label="Close panel">&times;</button>
         </div>
         <div class="panel-content">
             <!-- Content will be populated by JavaScript -->
@@ -963,7 +974,7 @@
         
         let loadProgress = 0;
         const loadingInterval = setInterval(() => {
-            loadProgress += Math.random() * 10;
+            loadProgress += 15 + Math.random() * 20;
             if (loadProgress >= 100) {
                 loadProgress = 100;
                 clearInterval(loadingInterval);
@@ -973,11 +984,11 @@
                     loadingScreen.style.opacity = '0';
                     setTimeout(() => {
                         loadingScreen.style.display = 'none';
-                    }, 1000);
-                }, 500);
+                    }, 500);
+                }, 300);
             }
             loadingBar.style.width = loadProgress + '%';
-        }, 200);
+        }, 120);
         
         // Theme toggle
         const themeToggle = document.getElementById('theme-toggle');
@@ -1016,6 +1027,15 @@
                 panel.classList.remove('active');
             });
         });
+
+        // Escape key closes any open panel
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.panel.active').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+            }
+        });
         
         // Node and connection configuration
         const sectionColors = [
@@ -1039,6 +1059,9 @@
             node.style.left = `${x}px`;
             node.style.top = `${y}px`;
             node.id = `node-${id}`;
+            node.setAttribute('role', 'button');
+            node.setAttribute('tabindex', '0');
+            node.setAttribute('aria-label', name + (isHub ? ' - Main hub' : ' - Click to view'));
             
             // Create diamond
             const diamond = document.createElement('div');
@@ -1091,6 +1114,14 @@
                 }, 300);
                 
                 openPanel(panelId);
+            });
+
+            // Keyboard support: Enter or Space activates the node
+            node.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    node.click();
+                }
             });
             
             return node;
