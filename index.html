@@ -936,6 +936,8 @@
                 document.body.style.height = 'auto';
                 viewToggle.textContent = '🎨';
                 viewToggle.setAttribute('aria-label', 'Switch to animated view');
+                // Stop animation while hidden to save resources
+                if (window._meshAnimation) window._meshAnimation.stop();
                 // Close any open panels so they don't block simple view
                 document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
                 // Load content into simple view
@@ -947,6 +949,8 @@
                 document.body.style.height = '100vh';
                 viewToggle.textContent = '📖';
                 viewToggle.setAttribute('aria-label', 'Switch to simple view');
+                // Restart animation when returning to animated view
+                if (window._meshAnimation) window._meshAnimation.start();
             }
         });
 
@@ -1356,6 +1360,7 @@
             }
             
             // Animation loop for packets
+            var animationRunning = true;
             function animatePackets() {
                 // First, check if we need to add more packets (if count is low)
                 if (packets.length < 10) {  // Maintain a minimum of 10 active packets
@@ -1398,11 +1403,17 @@
                     }
                 }
                 
-                requestAnimationFrame(animatePackets);
+                if (animationRunning) requestAnimationFrame(animatePackets);
             }
             
             // Start animation
             animatePackets();
+            
+            // Expose animation control for view toggle
+            window._meshAnimation = {
+                stop: function() { animationRunning = false; },
+                start: function() { if (!animationRunning) { animationRunning = true; animatePackets(); } }
+            };
             
             // Automatic pulse animation for nodes
             setInterval(() => {
