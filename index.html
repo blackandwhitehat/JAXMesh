@@ -1034,6 +1034,32 @@
                     panel.classList.remove('active');
                 });
             }
+            // Arrow keys navigate between nodes
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                const allNodes = Array.from(document.querySelectorAll('.radio-node'));
+                if (allNodes.length === 0) return;
+                const focused = document.activeElement;
+                let idx = allNodes.indexOf(focused);
+                if (idx === -1) {
+                    allNodes[0].focus();
+                } else {
+                    if (e.key === 'ArrowRight') idx = (idx + 1) % allNodes.length;
+                    else idx = (idx - 1 + allNodes.length) % allNodes.length;
+                    allNodes[idx].focus();
+                }
+                e.preventDefault();
+            }
+        });
+
+        // Click outside panel (on backdrop) closes it
+        document.addEventListener('click', (e) => {
+            const activePanels = document.querySelectorAll('.panel.active');
+            activePanels.forEach(panel => {
+                // Close if click is outside the panel and not on a node
+                if (!panel.contains(e.target) && !e.target.closest('.radio-node') && !e.target.closest('.logo')) {
+                    panel.classList.remove('active');
+                }
+            });
         });
         
         // Node and connection configuration
