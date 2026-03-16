@@ -1003,9 +1003,15 @@
             themeToggle.innerHTML = darkTheme ? '🌙' : '☀️';
         });
         
-        // Home button
+        // Home button — loads home in simple view or opens panel in network view
         document.getElementById('home-button').addEventListener('click', () => {
-            openPanel('home-panel');
+            if (simpleMode) {
+                document.querySelectorAll('.simple-nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelector('.simple-nav-link[data-panel="home-panel"]').classList.add('active');
+                loadSimpleView('home-panel');
+            } else {
+                openPanel('home-panel');
+            }
         });
         
         // Panel controls
