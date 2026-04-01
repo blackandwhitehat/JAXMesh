@@ -120,36 +120,58 @@
         
         .wave {
             position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0, 100, 255, 0.05) 50%, transparent 60%, transparent 100%);
-            animation: wave-animation 20s infinite linear;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 100, 255, 0.06);
+            animation: pulse-wave 8s infinite ease-out;
             pointer-events: none;
+            transform-origin: center center;
         }
         
         .wave2 {
-            opacity: 0.3;
-            animation-delay: -5s;
-            animation-duration: 17s;
-            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0, 150, 255, 0.03) 50%, transparent 60%, transparent 100%);
+            animation-delay: -2.7s;
+            border-color: rgba(0, 150, 255, 0.04);
         }
         
         .wave3 {
-            opacity: 0.2;
-            animation-delay: -2s;
-            animation-duration: 25s;
-            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(100, 200, 255, 0.04) 50%, transparent 60%, transparent 100%);
+            animation-delay: -5.3s;
+            border-color: rgba(100, 200, 255, 0.03);
         }
         
-        @keyframes wave-animation {
+        body.light-mode .wave { border-color: rgba(0, 100, 255, 0.08); }
+        body.light-mode .wave2 { border-color: rgba(0, 150, 255, 0.06); }
+        body.light-mode .wave3 { border-color: rgba(100, 200, 255, 0.05); }
+
+        @keyframes pulse-wave {
             0% {
-                transform: rotate(0deg);
+                transform: scale(0.1);
+                opacity: 0.6;
             }
             100% {
-                transform: rotate(360deg);
+                transform: scale(2.5);
+                opacity: 0;
             }
+        }
+
+        /* Panda watermark */
+        .panda-watermark {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 48px;
+            height: 48px;
+            z-index: 200;
+            filter: drop-shadow(0 0 8px rgba(0,100,255,.2));
+            opacity: 0.6;
+            transition: all .3s;
+        }
+        .panda-watermark:hover {
+            opacity: 1;
+            filter: drop-shadow(0 0 15px rgba(0,100,255,.4));
+            transform: scale(1.08);
         }
 
         /* Radio nodes */
@@ -1484,5 +1506,6 @@
         });
     </script>
     <script src="jaxmeshsections.js"></script>
+    <a href="https://bamboosec.com" target="_blank"><img src="panda-hero.png" alt="Panda" class="panda-watermark"></a>
 </body>
 </html>
