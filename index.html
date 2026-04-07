@@ -522,12 +522,84 @@
             opacity: 1;
         }
 
+        .announcement-teaser {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .announcement-expand {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .announcement-expand:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .announcement-details {
+            max-width: 640px;
+            margin: 0.75rem auto 0;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .announcement-details p {
+            margin: 0.5rem 0;
+        }
+
+        .announcement-details a {
+            color: #ffdd57;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
         body.has-announcement header {
             top: 42px;
         }
 
+        body.has-announcement.announcement-expanded header {
+            top: auto;
+            position: relative;
+        }
+
         body.has-announcement .loading-screen {
             padding-top: 42px;
+        }
+
+        .feedback-fab {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1500;
+            background: linear-gradient(135deg, #1a7cff, #0055cc);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(26,124,255,0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: var(--body-font);
+        }
+
+        .feedback-fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26,124,255,0.5);
         }
 
         /* View toggle button */
@@ -758,10 +830,19 @@
         <div class="loading-text" id="loading-text">Loading network...</div>
     </div>
 
-    <!-- Announcement Banner (auto-hides after March 28, 2026) -->
+    <!-- Announcement Banner — MediumFast update -->
     <div class="announcement-banner" id="announcement-banner">
         <div class="announcement-content">
-            📡 <strong>We're moving to MediumFast on March 28th!</strong> Details in <a href="https://discord.gg/86uf2wTMwq" target="_blank">#project-medfast on Discord</a>
+            <div class="announcement-teaser" id="announcement-teaser">
+                📡 <strong>Coverage gaps? We hear you — here's the plan.</strong>
+                <button class="announcement-expand" id="announcement-expand" aria-label="Read more">Read more ▾</button>
+            </div>
+            <div class="announcement-details" id="announcement-details" style="display:none;">
+                <p>After migrating to MediumFast, we've seen some coverage gaps. As a group, we've decided to hold off on switching back to LongFast while straggler nodes are still cutting over — there are plenty that still need to flip.</p>
+                <p>We're giving until <strong>April 24th</strong> to improve MediumFast penetration. After that, we'll run a community poll to decide whether to stay on MediumFast or switch back to LongFast.</p>
+                <p>If we can get the coverage dialed in, MediumFast sets us up well for the future. If not, we'll use this time to collect the data we need to understand what gaps to fill before trying again.</p>
+                <p>Thanks for your patience. Want to weigh in? Join <a href="https://discord.gg/86uf2wTMwq" target="_blank">#project-medfast on Discord</a>.</p>
+            </div>
         </div>
         <button class="announcement-close" id="announcement-close" aria-label="Dismiss announcement">&times;</button>
     </div>
@@ -903,20 +984,39 @@
     </div>
 
     <script>
-        // Announcement banner - auto-hide after March 28, 2026
+        // Announcement banner — expandable, auto-hide after April 24, 2026
         (function() {
             const banner = document.getElementById('announcement-banner');
-            const deadline = new Date('2026-03-29T00:00:00');
-            const dismissed = sessionStorage.getItem('announcement-dismissed');
+            const deadline = new Date('2026-04-25T00:00:00');
+            const dismissed = sessionStorage.getItem('announcement-dismissed-medfast');
 
             if (Date.now() >= deadline.getTime() || dismissed) {
                 banner.style.display = 'none';
             } else {
                 document.body.classList.add('has-announcement');
+
+                // Expand/collapse
+                const expandBtn = document.getElementById('announcement-expand');
+                const details = document.getElementById('announcement-details');
+                const teaser = document.getElementById('announcement-teaser');
+                let expanded = false;
+
+                expandBtn.addEventListener('click', function() {
+                    expanded = !expanded;
+                    details.style.display = expanded ? 'block' : 'none';
+                    expandBtn.textContent = expanded ? 'Collapse ▴' : 'Read more ▾';
+                    banner.style.position = expanded ? 'relative' : 'fixed';
+                    if (expanded) {
+                        document.body.classList.add('announcement-expanded');
+                    } else {
+                        document.body.classList.remove('announcement-expanded');
+                    }
+                });
+
                 document.getElementById('announcement-close').addEventListener('click', function() {
                     banner.style.display = 'none';
-                    document.body.classList.remove('has-announcement');
-                    sessionStorage.setItem('announcement-dismissed', '1');
+                    document.body.classList.remove('has-announcement', 'announcement-expanded');
+                    sessionStorage.setItem('announcement-dismissed-medfast', '1');
                 });
             }
         })();
@@ -1483,6 +1583,10 @@
             initializeNetwork();
         });
     </script>
+    <!-- Feedback Button -->
+    <a href="https://discord.gg/86uf2wTMwq" target="_blank" class="feedback-fab" aria-label="Send feedback on Discord">
+        💬 Feedback
+    </a>
     <script src="jaxmeshsections.js"></script>
     <a href="https://bamboosec.com" target="_blank"><img src="panda-hero.png" alt="Panda" class="panda-watermark"></a>
 </body>
