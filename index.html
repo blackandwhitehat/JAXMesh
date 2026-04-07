@@ -602,6 +602,158 @@
             box-shadow: 0 6px 20px rgba(26,124,255,0.5);
         }
 
+        .feedback-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .feedback-modal {
+            background: var(--panel-bg, #fff);
+            color: var(--text-color, #1a1a1a);
+            width: 100%;
+            max-width: 480px;
+            border-radius: 1rem 1rem 0 0;
+            padding: 1.25rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .feedback-overlay { align-items: center; }
+            .feedback-modal { border-radius: 1rem; }
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .feedback-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-color, #666);
+            opacity: 0.6;
+        }
+
+        .feedback-close:hover { opacity: 1; }
+
+        .feedback-types {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .feedback-type {
+            flex: 1;
+            padding: 0.5rem 0.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--card-bg, #f3f4f6);
+            color: var(--text-color, #666);
+            transition: all 0.15s;
+            font-family: var(--body-font);
+        }
+
+        .feedback-type.active {
+            background: linear-gradient(135deg, #1a7cff, #0055cc);
+            color: white;
+        }
+
+        .feedback-message {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            background: var(--card-bg, #fff);
+            color: var(--text-color, #1a1a1a);
+            font-family: var(--body-font);
+            box-sizing: border-box;
+        }
+
+        .feedback-message:focus {
+            border-color: #1a7cff;
+            box-shadow: 0 0 0 2px rgba(26,124,255,0.2);
+        }
+
+        .feedback-email {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 0.75rem;
+            font-size: 0.85rem;
+            outline: none;
+            background: var(--card-bg, #fff);
+            color: var(--text-color, #1a1a1a);
+            font-family: var(--body-font);
+            box-sizing: border-box;
+        }
+
+        .feedback-email:focus {
+            border-color: #1a7cff;
+            box-shadow: 0 0 0 2px rgba(26,124,255,0.2);
+        }
+
+        .feedback-submit {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #1a7cff, #0055cc);
+            color: white;
+            font-family: var(--body-font);
+            transition: opacity 0.15s;
+        }
+
+        .feedback-submit:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .feedback-success {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        .feedback-discord {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.6rem;
+            border-radius: 0.75rem;
+            background: rgba(88,101,242,0.1);
+            color: #5865F2;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+
+        .feedback-discord:hover {
+            background: rgba(88,101,242,0.2);
+        }
+
         /* View toggle button */
         .view-toggle {
             background: none;
@@ -1584,10 +1736,117 @@
             initializeNetwork();
         });
     </script>
-    <!-- Feedback Button -->
-    <a href="https://discord.gg/86uf2wTMwq" target="_blank" class="feedback-fab" aria-label="Send feedback on Discord">
+    <!-- Feedback Button + Modal -->
+    <button class="feedback-fab" id="feedback-fab" aria-label="Send feedback">
         💬 Feedback
-    </a>
+    </button>
+    <div class="feedback-overlay" id="feedback-overlay" style="display:none;">
+        <div class="feedback-modal">
+            <div class="feedback-header">
+                <span>💬 Send Feedback</span>
+                <button class="feedback-close" id="feedback-close">✕</button>
+            </div>
+            <div class="feedback-types" id="feedback-types">
+                <button class="feedback-type active" data-type="general">General</button>
+                <button class="feedback-type" data-type="bug">Bug Report</button>
+                <button class="feedback-type" data-type="idea">Idea</button>
+                <button class="feedback-type" data-type="coverage">Coverage</button>
+            </div>
+            <textarea class="feedback-message" id="feedback-message" placeholder="What's on your mind?" rows="4"></textarea>
+            <input class="feedback-email" id="feedback-email" type="email" placeholder="Email (optional, for follow-up)">
+            <button class="feedback-submit" id="feedback-submit" disabled>Send Feedback</button>
+            <div class="feedback-success" id="feedback-success" style="display:none;">
+                <span style="font-size:2rem;">🎉</span>
+                <p><strong>Thanks for the feedback!</strong></p>
+                <p style="font-size:0.85rem;opacity:0.7;">It's been sent to the team on Discord.</p>
+            </div>
+            <a href="https://discord.gg/86uf2wTMwq" target="_blank" class="feedback-discord">
+                💬 Or join the conversation on Discord
+            </a>
+        </div>
+    </div>
+    <script>
+        // Feedback modal
+        (function() {
+            const fab = document.getElementById('feedback-fab');
+            const overlay = document.getElementById('feedback-overlay');
+            const closeBtn = document.getElementById('feedback-close');
+            const msg = document.getElementById('feedback-message');
+            const email = document.getElementById('feedback-email');
+            const submit = document.getElementById('feedback-submit');
+            const success = document.getElementById('feedback-success');
+            const types = document.getElementById('feedback-types');
+            let feedbackType = 'general';
+
+            fab.addEventListener('click', function() {
+                overlay.style.display = 'flex';
+            });
+
+            closeBtn.addEventListener('click', function() {
+                overlay.style.display = 'none';
+            });
+
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) overlay.style.display = 'none';
+            });
+
+            types.addEventListener('click', function(e) {
+                const btn = e.target.closest('.feedback-type');
+                if (!btn) return;
+                types.querySelectorAll('.feedback-type').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                feedbackType = btn.dataset.type;
+            });
+
+            msg.addEventListener('input', function() {
+                submit.disabled = !msg.value.trim();
+            });
+
+            submit.addEventListener('click', async function() {
+                if (!msg.value.trim()) return;
+                submit.disabled = true;
+                submit.textContent = 'Sending...';
+                try {
+                    const body = {
+                        embeds: [{
+                            title: feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1) + ' Feedback',
+                            description: msg.value.trim(),
+                            color: feedbackType === 'bug' ? 0xff4444 : feedbackType === 'idea' ? 0x44bb44 : feedbackType === 'coverage' ? 0xffaa00 : 0x1a7cff,
+                            fields: email.value.trim() ? [{ name: 'Email', value: email.value.trim() }] : [],
+                            footer: { text: 'JAXMesh Website Feedback' },
+                            timestamp: new Date().toISOString()
+                        }]
+                    };
+                    await fetch('https://discord.com/api/webhooks/1490930925494730813/P_NhiyBuPP08yVIVuBEfgGQnTnIoHU2IKhuW9_sZDaiR2_-optYoeCdS5UKD8nScq12r', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    msg.style.display = 'none';
+                    email.style.display = 'none';
+                    submit.style.display = 'none';
+                    types.style.display = 'none';
+                    success.style.display = 'block';
+                    setTimeout(function() {
+                        overlay.style.display = 'none';
+                        msg.style.display = '';
+                        email.style.display = '';
+                        submit.style.display = '';
+                        types.style.display = '';
+                        success.style.display = 'none';
+                        msg.value = '';
+                        email.value = '';
+                        submit.textContent = 'Send Feedback';
+                        submit.disabled = true;
+                    }, 2000);
+                } catch(e) {
+                    alert('Failed to send. Try Discord instead.');
+                    submit.textContent = 'Send Feedback';
+                    submit.disabled = false;
+                }
+            });
+        })();
+    </script>
     <script src="jaxmeshsections.js"></script>
     <a href="https://bamboosec.com" target="_blank"><img src="panda-hero.png" alt="Panda" class="panda-watermark"></a>
 </body>
