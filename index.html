@@ -830,15 +830,15 @@
         <div class="loading-text" id="loading-text">Loading network...</div>
     </div>
 
-    <!-- Announcement Banner — MediumFast update -->
+    <!-- Announcement Banner - MediumFast update -->
     <div class="announcement-banner" id="announcement-banner">
         <div class="announcement-content">
             <div class="announcement-teaser" id="announcement-teaser">
-                📡 <strong>Coverage gaps? We hear you — here's the plan.</strong>
+                📡 <strong>Coverage gaps? We hear you. Here's the plan.</strong>
                 <button class="announcement-expand" id="announcement-expand" aria-label="Read more">Read more ▾</button>
             </div>
             <div class="announcement-details" id="announcement-details" style="display:none;">
-                <p>After migrating to MediumFast, we've seen some coverage gaps. As a group, we've decided to hold off on switching back to LongFast while straggler nodes are still cutting over — there are plenty that still need to flip.</p>
+                <p>After migrating to MediumFast, we've seen some coverage gaps. As a group, we've decided to hold off on switching back to LongFast while straggler nodes are still cutting over. There are plenty that still need to flip.</p>
                 <p>We're giving until <strong>April 24th</strong> to improve MediumFast penetration. After that, we'll run a community poll to decide whether to stay on MediumFast or switch back to LongFast.</p>
                 <p>If we can get the coverage dialed in, MediumFast sets us up well for the future. If not, we'll use this time to collect the data we need to understand what gaps to fill before trying again.</p>
                 <p>Thanks for your patience. Want to weigh in? Join <a href="https://discord.gg/86uf2wTMwq" target="_blank">#project-medfast on Discord</a>.</p>
@@ -984,7 +984,7 @@
     </div>
 
     <script>
-        // Announcement banner — expandable, auto-hide after April 24, 2026
+        // Announcement banner - expandable, auto-hide after April 24, 2026
         (function() {
             const banner = document.getElementById('announcement-banner');
             const deadline = new Date('2026-04-25T00:00:00');
@@ -1112,7 +1112,7 @@
             themeToggle.innerHTML = darkTheme ? '🌙' : '☀️';
         });
         
-        // Home button — loads home in simple view or opens panel in network view
+        // Home button - loads home in simple view or opens panel in network view
         document.getElementById('home-button').addEventListener('click', () => {
             if (simpleMode) {
                 document.querySelectorAll('.simple-nav-link').forEach(l => l.classList.remove('active'));
@@ -1170,7 +1170,7 @@
             }
         });
 
-        // Click outside panel (on backdrop) closes it — only in network view
+        // Click outside panel (on backdrop) closes it - only in network view
         document.addEventListener('click', (e) => {
             if (simpleMode) return; // Don't interfere with simple view
             const activePanels = document.querySelectorAll('.panel.active');
