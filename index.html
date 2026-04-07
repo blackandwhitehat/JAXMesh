@@ -138,7 +138,7 @@
         .panda-watermark {
             position: fixed;
             bottom: 1rem;
-            right: 1rem;
+            left: 1rem;
             width: 48px;
             height: 48px;
             z-index: 200;
@@ -487,13 +487,13 @@
             z-index: 2001;
             background: linear-gradient(135deg, #1a7cff, #0055cc);
             color: white;
-            padding: 0.75rem 2rem;
+            padding: 0.6rem 1rem;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            gap: 1rem;
+            gap: 0.75rem;
             font-family: var(--body-font);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
@@ -563,17 +563,8 @@
             font-weight: 600;
         }
 
-        body.has-announcement header {
-            top: 42px;
-        }
-
-        body.has-announcement.announcement-expanded header {
-            top: auto;
-            position: relative;
-        }
-
         body.has-announcement .loading-screen {
-            padding-top: 42px;
+            padding-top: 60px;
         }
 
         .feedback-fab {
@@ -584,17 +575,16 @@
             background: linear-gradient(135deg, #1a7cff, #0055cc);
             color: white;
             border: none;
-            border-radius: 50px;
-            padding: 0.75rem 1.25rem;
-            font-size: 0.9rem;
-            font-weight: 600;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.3rem;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(26,124,255,0.4);
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            justify-content: center;
             transition: transform 0.2s, box-shadow 0.2s;
-            font-family: var(--body-font);
         }
 
         .feedback-fab:hover {
@@ -1143,32 +1133,41 @@
             const deadline = new Date('2026-04-25T00:00:00');
             const dismissed = sessionStorage.getItem('announcement-dismissed-medfast');
 
+            function updateHeaderOffset() {
+                var h = banner.offsetHeight;
+                var header = document.querySelector('header');
+                if (header) header.style.top = h + 'px';
+            }
+
             if (Date.now() >= deadline.getTime() || dismissed) {
                 banner.style.display = 'none';
             } else {
                 document.body.classList.add('has-announcement');
+                updateHeaderOffset();
 
-                // Expand/collapse
-                const expandBtn = document.getElementById('announcement-expand');
-                const details = document.getElementById('announcement-details');
-                const teaser = document.getElementById('announcement-teaser');
-                let expanded = false;
+                var expandBtn = document.getElementById('announcement-expand');
+                var details = document.getElementById('announcement-details');
+                var expanded = false;
 
                 expandBtn.addEventListener('click', function() {
                     expanded = !expanded;
                     details.style.display = expanded ? 'block' : 'none';
                     expandBtn.textContent = expanded ? 'Collapse ▴' : 'Read more ▾';
-                    banner.style.position = expanded ? 'relative' : 'fixed';
                     if (expanded) {
-                        document.body.classList.add('announcement-expanded');
+                        banner.style.position = 'relative';
                     } else {
-                        document.body.classList.remove('announcement-expanded');
+                        banner.style.position = 'fixed';
                     }
+                    setTimeout(updateHeaderOffset, 10);
                 });
+
+                window.addEventListener('resize', updateHeaderOffset);
 
                 document.getElementById('announcement-close').addEventListener('click', function() {
                     banner.style.display = 'none';
-                    document.body.classList.remove('has-announcement', 'announcement-expanded');
+                    document.body.classList.remove('has-announcement');
+                    var header = document.querySelector('header');
+                    if (header) header.style.top = '0';
                     sessionStorage.setItem('announcement-dismissed-medfast', '1');
                 });
             }
@@ -1738,7 +1737,7 @@
     </script>
     <!-- Feedback Button + Modal -->
     <button class="feedback-fab" id="feedback-fab" aria-label="Send feedback">
-        💬 Feedback
+        💬
     </button>
     <div class="feedback-overlay" id="feedback-overlay" style="display:none;">
         <div class="feedback-modal">
