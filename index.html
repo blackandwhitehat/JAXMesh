@@ -234,6 +234,20 @@
         }
         .ln-links a:hover { opacity: 0.75; }
 
+        .ln-credit {
+            margin-top: 0.6rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.06em;
+            opacity: 0.55;
+            text-align: right;
+        }
+        .ln-credit a {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 1px dotted currentColor;
+        }
+        .ln-credit a:hover { opacity: 1; color: var(--accent-color); }
+
         /* Network container */
         #network-container {
             position: relative;
@@ -1205,6 +1219,9 @@
                     <a href="https://mqtt.jaxmesh.com/dashboard/messages" target="_blank" rel="noopener">Messages</a>
                     <a href="https://mqtt.jaxmesh.com/dashboard/telemetry" target="_blank" rel="noopener">Telemetry</a>
                     <a href="https://mqtt.jaxmesh.com/dashboard/positions" target="_blank" rel="noopener">Positions</a>
+                </div>
+                <div class="ln-credit">
+                    Live data via <a href="https://arcyn.com" target="_blank" rel="noopener">@arcyn</a>
                 </div>
             </div>
 
