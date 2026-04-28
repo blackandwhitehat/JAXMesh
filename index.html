@@ -96,6 +96,144 @@
             transform: rotate(30deg);
         }
 
+        /* Live network counter (header widget) */
+        .live-counter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--grid-dark);
+            border-radius: 999px;
+            background: var(--panel-dark);
+            font-family: var(--primary-font);
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            color: var(--dark-text);
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+            user-select: none;
+        }
+        .live-counter:hover { border-color: var(--accent-color); transform: translateY(-1px); }
+        body.light-mode .live-counter {
+            background: var(--panel-light);
+            border-color: var(--grid-light);
+            color: var(--light-text);
+        }
+        .live-counter .live-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #2ee06b;
+            box-shadow: 0 0 8px #2ee06b;
+            animation: livePulse 2s ease-in-out infinite;
+        }
+        .live-counter[data-state="stale"] .live-dot { background: #f0a020; box-shadow: 0 0 8px #f0a020; }
+        .live-counter[data-state="error"] .live-dot { background: #888; box-shadow: none; animation: none; }
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.55; transform: scale(0.85); }
+        }
+        .live-counter .lc-num {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* Live network section inside the Hub panel */
+        .live-network {
+            margin-top: 0.5rem;
+            padding: 1rem;
+            border: 1px solid var(--grid-dark);
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(26,124,255,0.06), rgba(26,124,255,0.02));
+        }
+        body.light-mode .live-network {
+            border-color: var(--grid-light);
+            background: linear-gradient(135deg, rgba(26,124,255,0.08), rgba(26,124,255,0.02));
+        }
+        .live-network-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 0.85rem;
+            font-family: var(--primary-font);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--dark-text);
+            opacity: 0.75;
+        }
+        body.light-mode .live-network-head { color: var(--light-text); }
+        .live-network-head .live-title { display: flex; align-items: center; gap: 0.5rem; }
+        .live-network-head .ln-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #2ee06b;
+            box-shadow: 0 0 8px #2ee06b;
+            animation: livePulse 2s ease-in-out infinite;
+        }
+        .live-network[data-state="stale"] .ln-dot { background: #f0a020; box-shadow: 0 0 8px #f0a020; }
+        .live-network[data-state="error"] .ln-dot { background: #888; box-shadow: none; animation: none; }
+        .live-network-head .ln-meta { font-size: 0.65rem; opacity: 0.6; letter-spacing: 0.05em; }
+
+        .ln-tiles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        .ln-tile {
+            text-align: center;
+            padding: 0.85rem 0.5rem;
+            border: 1px solid var(--grid-dark);
+            border-radius: 8px;
+            background: var(--panel-dark);
+        }
+        body.light-mode .ln-tile { background: var(--panel-light); border-color: var(--grid-light); }
+        .ln-tile .ln-num {
+            display: block;
+            font-family: var(--primary-font);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            letter-spacing: 0.02em;
+            line-height: 1.05;
+        }
+        .ln-tile .ln-lbl {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .ln-hardware {
+            margin-top: 0.85rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.6rem;
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+        .ln-hw-item { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .ln-hw-bar {
+            display: inline-block;
+            height: 6px;
+            background: var(--accent-color);
+            border-radius: 3px;
+            min-width: 8px;
+        }
+
+        .ln-links {
+            margin-top: 0.85rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.85rem;
+            font-size: 0.8rem;
+        }
+        .ln-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent-color);
+            padding-bottom: 1px;
+            transition: opacity 0.2s ease;
+        }
+        .ln-links a:hover { opacity: 0.75; }
+
         /* Network container */
         #network-container {
             position: relative;
@@ -996,6 +1134,10 @@
             <img src="jaxmeshlogo.png" alt="JaxMesh Logo">
         </div>
         <div class="controls">
+            <button class="live-counter" id="live-counter" data-state="loading" aria-label="Open live network panel" title="Click for full network stats">
+                <span class="live-dot"></span>
+                <span><span class="lc-num" id="lc-active">--</span>/<span class="lc-num" id="lc-total">--</span> NODES LIVE</span>
+            </button>
             <button class="view-toggle" id="view-toggle" aria-label="Toggle simple view">📖</button>
             <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
         </div>
@@ -1046,6 +1188,26 @@
             🧢 Look for the 🐼 hat!<br>
             ⚡ All updates (news, changes, cancellations) are shared through Discord. Join today, don't miss out!</p>
           
+            <div class="live-network" id="live-network" data-state="loading">
+                <div class="live-network-head">
+                    <span class="live-title"><span class="ln-dot"></span><span>🛰️ Live Network</span></span>
+                    <span class="ln-meta" id="ln-meta">connecting…</span>
+                </div>
+                <div class="ln-tiles">
+                    <div class="ln-tile"><span class="ln-num" id="ln-total">--</span><span class="ln-lbl">Total nodes</span></div>
+                    <div class="ln-tile"><span class="ln-num" id="ln-active-1h">--</span><span class="ln-lbl">Active 1h</span></div>
+                    <div class="ln-tile"><span class="ln-num" id="ln-active-24h">--</span><span class="ln-lbl">Active 24h</span></div>
+                </div>
+                <div class="ln-hardware" id="ln-hardware"></div>
+                <div class="ln-links">
+                    <a href="https://mqtt.jaxmesh.com/dashboard/nodes" target="_blank" rel="noopener">Nodes</a>
+                    <a href="https://mqtt.jaxmesh.com/worldmap/" target="_blank" rel="noopener">World map</a>
+                    <a href="https://mqtt.jaxmesh.com/dashboard/messages" target="_blank" rel="noopener">Messages</a>
+                    <a href="https://mqtt.jaxmesh.com/dashboard/telemetry" target="_blank" rel="noopener">Telemetry</a>
+                    <a href="https://mqtt.jaxmesh.com/dashboard/positions" target="_blank" rel="noopener">Positions</a>
+                </div>
+            </div>
+
             <h2>🌐 About the Site</h2>
             <p>Each diamond represents a Meshtastic node<br>
             Each link represents a connection</p>
@@ -1517,6 +1679,85 @@
             
             return animData;
         }
+
+        // Live network stats fetched from the mqtt.jaxmesh.com worker tap.
+        // The worker harvests counts from real user dashboard traffic and
+        // caches the latest snapshot in CF KV; this endpoint returns it
+        // (CORS-open, ~30s edge cache).
+        const STATS_URL = 'https://mqtt.jaxmesh.com/__stats.json';
+        const STALE_MS = 6 * 60 * 60 * 1000;   // older than 6h → "stale"
+        function fmtRelative(iso) {
+            if (!iso) return '';
+            const t = new Date(iso).getTime();
+            if (!Number.isFinite(t)) return '';
+            const s = Math.max(0, Math.floor((Date.now() - t) / 1000));
+            if (s < 60)    return s + 's ago';
+            if (s < 3600)  return Math.floor(s / 60) + 'm ago';
+            if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+            return Math.floor(s / 86400) + 'd ago';
+        }
+        async function refreshLiveStats() {
+            const counter = document.getElementById('live-counter');
+            const panel = document.getElementById('live-network');
+            const meta = document.getElementById('ln-meta');
+            try {
+                const r = await fetch(STATS_URL, { cache: 'no-store' });
+                const data = await r.json();
+                if (!data || data.ok === false) {
+                    counter.dataset.state = 'error';
+                    panel.dataset.state = 'error';
+                    meta.textContent = 'no data yet';
+                    return;
+                }
+                const ageMs = data.as_of ? (Date.now() - new Date(data.as_of).getTime()) : Infinity;
+                const state = ageMs > STALE_MS ? 'stale' : 'ok';
+                counter.dataset.state = state;
+                panel.dataset.state = state;
+
+                document.getElementById('lc-active').textContent = data.active_last_hour ?? '--';
+                document.getElementById('lc-total').textContent  = data.total_nodes ?? '--';
+                document.getElementById('ln-total').textContent     = data.total_nodes ?? '--';
+                document.getElementById('ln-active-1h').textContent = data.active_last_hour ?? '--';
+                document.getElementById('ln-active-24h').textContent = data.active_last_24h ?? '--';
+                meta.textContent = data.as_of ? ('updated ' + fmtRelative(data.as_of)) : '';
+
+                // Hardware breakdown — render top 6 by count as proportional bars.
+                const hwHost = document.getElementById('ln-hardware');
+                hwHost.innerHTML = '';
+                const hw = Object.entries(data.hardware_breakdown || {})
+                    .filter(([k]) => k && k.toLowerCase() !== 'unknown')
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 6);
+                const max = hw.reduce((m, [, n]) => Math.max(m, n), 0) || 1;
+                hw.forEach(([name, n]) => {
+                    const item = document.createElement('span');
+                    item.className = 'ln-hw-item';
+                    const bar = document.createElement('span');
+                    bar.className = 'ln-hw-bar';
+                    bar.style.width = Math.max(8, Math.round((n / max) * 32)) + 'px';
+                    bar.style.opacity = String(0.45 + 0.55 * (n / max));
+                    item.appendChild(bar);
+                    const lbl = document.createElement('span');
+                    lbl.textContent = name + ' · ' + n;
+                    item.appendChild(lbl);
+                    hwHost.appendChild(item);
+                });
+            } catch (_) {
+                counter.dataset.state = 'error';
+                panel.dataset.state = 'error';
+                meta.textContent = 'offline';
+            }
+        }
+        // Click the header counter → open the Hub panel.
+        document.getElementById('live-counter')?.addEventListener('click', () => {
+            const hub = document.getElementById('home-panel');
+            if (!hub) return;
+            // Match the existing panel-open pattern (mirrors what hub-button click does).
+            document.querySelectorAll('.panel.active').forEach(p => p.classList.remove('active'));
+            hub.classList.add('active');
+        });
+        refreshLiveStats();
+        setInterval(refreshLiveStats, 30000);
 
         // Initialize the network after the page loads
         window.addEventListener('load', () => {
