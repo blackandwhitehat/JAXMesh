@@ -1713,13 +1713,27 @@
             if (s < 86400) return Math.floor(s / 3600) + 'h ago';
             return Math.floor(s / 86400) + 'd ago';
         }
+        async function fetchStatsWithRetry() {
+            // First-load TLS handshakes to a cross-origin host can occasionally
+            // fail or get aborted on mobile networks; retry once after a short
+            // delay before we give up and show "offline".
+            for (let i = 0; i < 2; i++) {
+                try {
+                    const r = await fetch(STATS_URL, { cache: 'no-store' });
+                    if (!r.ok) throw new Error('http ' + r.status);
+                    return await r.json();
+                } catch (e) {
+                    if (i === 1) throw e;
+                    await new Promise(res => setTimeout(res, 1500));
+                }
+            }
+        }
         async function refreshLiveStats() {
             const counter = document.getElementById('live-counter');
             const panel = document.getElementById('live-network');
             const meta = document.getElementById('ln-meta');
             try {
-                const r = await fetch(STATS_URL, { cache: 'no-store' });
-                const data = await r.json();
+                const data = await fetchStatsWithRetry();
                 if (!data || data.ok === false) {
                     counter.dataset.state = 'error';
                     panel.dataset.state = 'error';
