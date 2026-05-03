@@ -1124,19 +1124,18 @@
         <div class="loading-text" id="loading-text">Loading network...</div>
     </div>
 
-    <!-- Announcement Banner - MediumFast update -->
+    <!-- Announcement Banner - back to LongFast -->
     <div class="announcement-banner" id="announcement-banner">
         <div class="announcement-content">
             <div class="announcement-teaser" id="announcement-teaser">
-                📡 <strong>Coverage gaps? We hear you. Here's the plan.</strong>
+                📡 <strong>We're back on LongFast.</strong>
                 <button class="announcement-expand" id="announcement-expand" aria-label="Read more">Read more ▾</button>
             </div>
             <div class="announcement-details" id="announcement-details" style="display:none;">
-                <p>After migrating to MediumFast, we've seen some coverage gaps. As a group, we've decided to hold off on switching back to LongFast while straggler nodes are still cutting over. There are plenty that still need to flip.</p>
-                <p>We're giving until <strong>April 24th</strong> to improve MediumFast penetration. After that, we'll run a community poll to decide whether to stay on MediumFast or switch back to LongFast.</p>
-                <p>If we can get the coverage dialed in, MediumFast sets us up well for the future. If not, we'll use this time to collect the data we need to understand what gaps to fill before trying again.</p>
-                <p>The good news? We're fortunate to be learning these lessons now, while the mesh isn't critical infrastructure. A year ago we had basically no coverage. Today we have a real network with real gaps to solve. That's progress.</p>
-                <p>Thanks for your patience. Want to weigh in? Join <a href="https://discord.gg/86uf2wTMwq" target="_blank">#project-medfast on Discord</a>.</p>
+                <p>After running on MediumFast for a few weeks, we've decided to switch the JaxMesh back to LongFast. The coverage trade-offs didn't pencil out for our footprint right now. Too many consistent gaps, especially at the edges of the network.</p>
+                <p><strong>What you need to do:</strong> set your node's primary channel modem preset back to <strong>LongFast</strong>.</p>
+                <p>Thanks to everyone who tested, ran experiments, and weighed in on the data. We learned a lot about where our gaps are. We'll revisit MediumFast (or a future faster preset) once coverage is denser.</p>
+                <p>Questions? Hit us in <code>#general</code> or <code>#project-medfast</code> on <a href="https://discord.gg/86uf2wTMwq" target="_blank">Discord</a>.</p>
             </div>
         </div>
         <button class="announcement-close" id="announcement-close" aria-label="Dismiss announcement">&times;</button>
@@ -1306,11 +1305,13 @@
     </div>
 
     <script>
-        // Announcement banner - expandable, auto-hide after April 24, 2026
+        // Announcement banner - expandable, auto-hide after May 31, 2026.
+        // Dismiss key bumped from -medfast to -longfast-back so the
+        // anyone who closed the previous banner sees this new one.
         (function() {
             const banner = document.getElementById('announcement-banner');
-            const deadline = new Date('2026-04-25T00:00:00');
-            const dismissed = sessionStorage.getItem('announcement-dismissed-medfast');
+            const deadline = new Date('2026-06-01T00:00:00');
+            const dismissed = sessionStorage.getItem('announcement-dismissed-longfast-back');
 
             function updateHeaderOffset() {
                 var h = banner.offsetHeight;
@@ -1347,7 +1348,7 @@
                     document.body.classList.remove('has-announcement');
                     var header = document.querySelector('header');
                     if (header) header.style.top = '0';
-                    sessionStorage.setItem('announcement-dismissed-medfast', '1');
+                    sessionStorage.setItem('announcement-dismissed-longfast-back', '1');
                 });
             }
         })();
