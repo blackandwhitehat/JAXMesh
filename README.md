@@ -1,25 +1,54 @@
-# JaxMesh: Visualizing Our Meshtastic Community
+# JaxMesh
 
-I built this interactive visualization to showcase how the Meshtastic network works. Instead of boring diagrams, I wanted to create something that actually *shows* how data moves between nodes in real-time.
+**The home base for Jacksonville's Meshtastic community.** [JaxMesh.com](https://jaxmesh.com)
+is an interactive, living hub that shows what a mesh network is, points newcomers at every
+resource they need to get on the air, and tells locals when and where the community meets.
+It is proudly operated by [CommsForAll](https://commsforall.com).
 
-## What's Cool About This
+Meshtastic is off-grid, long-range radio mesh networking on cheap LoRa hardware: no cell
+service, no internet, no subscription. JaxMesh makes that idea click and gives our local
+network a front door.
 
-- **It's alive!** The visualization shows packets zipping between nodes just like they would in a real mesh network
-- **Everything's clickable** - each node opens a panel with essential resources for that category
-- **No content duplication** - pulls directly from the community-maintained Awesome Meshtastic List
-- **Switch between dark/light mode** depending on your preference (I'm a dark mode person myself)
+## What it does
 
-## Tech Behind It
+- **Shows the mesh in motion.** An animated hub-and-node visualization sends packets
+  hopping between nodes, so visitors see how data moves through a mesh instead of reading
+  a static diagram.
+- **Every node is a doorway.** Click a node to open a panel of curated resources for that
+  category: Official Resources, Guides and Getting Started, Maps and Diagnostics, Server
+  Software, Local Software, Hacks and Projects, and Hardware Stores.
+- **Never goes stale.** Those panels are pulled live from the community-maintained
+  [Awesome Meshtastic](https://github.com/ShakataGaNai/awesome-meshtastic) list, so any PR
+  merged upstream shows up here automatically, with no content to duplicate or maintain.
+- **Connects the community.** Mission, meetup time and place, and links to our Discord
+  where updates get posted.
+- **Light and dark mode.**
 
-Just vanilla JavaScript, HTML and CSS - nothing fancy or complicated. I was pretty happy with how the wave animations turned out using just CSS. The packet movement has a slight arc to make it look more natural, and I made sure there's always a minimum number of packets moving to keep things interesting.
+## Tech
 
-## For Our Community
+Vanilla HTML, CSS, and JavaScript, no framework and no build step. The packet animations
+and wave effects are pure CSS and canvas. `jaxmeshsections.js` fetches the Awesome
+Meshtastic README at load time and renders each section into its matching panel.
 
-Shows:
-- When and where we meet 
-- Links to our Discord where all updates get posted
-- Quick access to all the resources someone would need to get started
+| File | Purpose |
+|------|---------|
+| `index.html` | The full single-page hub, styles, and animation |
+| `jaxmeshsections.js` | Fetches and renders the Awesome Meshtastic sections into panels |
+| `jaxmeshlogo.png`, `panda-hero.png` | Branding assets |
 
-Instead of maintaining our own list of resources, we tap into what the broader community is already building, so any PRs to the Awesome Meshtastic repo automatically show up on our site too!
+## Run it
 
-Feel free to fork this for your own local Meshtastic community! The structure is pretty adaptable, and I'd love to see other groups use it.
+No build required. Open `index.html` in a browser, or serve the folder:
+
+```bash
+python3 -m http.server 8000
+```
+
+Serving over HTTP (rather than `file://`) lets the live fetch from GitHub work. The site
+deploys as static files on Cloudflare Pages.
+
+## Fork it for your community
+
+The structure is deliberately adaptable. Fork this repo, swap the branding and meetup
+details, and you have a hub for your own local Meshtastic group that stays current with
+the broader community's resource list. MIT licensed.
