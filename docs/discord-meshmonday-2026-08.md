@@ -9,6 +9,9 @@ Our next #MeshMonday meetup is:
 **9560 Heckscher Dr, Jacksonville, FL 32226**  
 <https://www.google.com/maps/search/?api=1&query=9560+Heckscher+Dr+Jacksonville+FL+32226>
 
+We had a great time at our latest meetup there and enjoyed doing some node
+maintenance by the water, so it is a fitting home for this month's gathering.
+
 This change is **for the August meeting only** while Panda and other community
 members are at Hacker Summer Camp. After this meetup, we return to our regular
 first-Monday location at Southern Grounds.
